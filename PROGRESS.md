@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 **Deadline:** Nov 30, 2026 11:59 PM
-**Current focus:** Project setup (C1)
-**Last updated:** Nov 26, 2026
+**Current focus:** Auth + models (C2)
+**Last updated:** Nov 27, 2026
 
 ## Plan
 
@@ -67,11 +67,11 @@
 
 ## In progress
 
-Nothing yet.
+Nothing yet (C2 not started).
 
 ## Done
 
-Nothing yet.
+- C1 — Setup: `/client` (Vite, React, Router, axios instance) and `/server` (Express, Mongoose connection, error middleware, `/api/health`, `.env.example`). Committed as `chore: scaffold client and server`.
 
 ## Known issues
 
