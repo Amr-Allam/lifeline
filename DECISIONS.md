@@ -1,0 +1,22 @@
+# DECISIONS.md
+
+Log of locked-in choices. Do not change without the user's approval. Add new entries at the bottom.
+
+| ID    | Decision                                                                             | Why                                                        |
+| ----- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| D-001 | Match donors by exact blood group + normalized city string; no geolocation           | Satisfies "nearby" in the brief; fastest to build and test |
+| D-002 | Plain JavaScript, no TypeScript                                                      | 4-day deadline; less setup and friction                    |
+| D-003 | Monorepo with `/client` (Vite + React) and `/server` (Express)                       | Single repo to submit; simple local dev                    |
+| D-004 | MongoDB via Mongoose; collections: `users`, `donors`, `requests`, `notifications`    | Required stack; schema validation and refs                 |
+| D-005 | JWT auth (Bearer header) with roles `donor`, `requester`, `admin`                    | Simple, stateless, matches role-based features             |
+| D-006 | Admin is seeded via script, never self-registered                                    | Prevents privilege escalation through registration         |
+| D-007 | Only `verified` and `available` donors are matched or searchable                     | Admin verification must have a real effect                 |
+| D-008 | Email via Nodemailer + Ethereal (test mode); preview URL stored on each Notification | Brief says test mode; no real emails sent                  |
+| D-009 | SMS is a log-only stub that still records a Notification (`channel: sms`)            | Brief says email/SMS test mode; avoids paid providers      |
+| D-010 | Donor search returns only name, blood group, city (no email/phone)                   | Donor privacy                                              |
+| D-011 | Validation with zod                                                                  | Lightweight, clear error messages                          |
+| D-012 | Out of scope: blood compatibility matrix, radius search, real SMS, donation cooldown | Protect the deadline; revisit only if time remains         |
+| D-013 | `notifiedCount` = unique donors notified                                             | Notification records double-count (email + SMS)            |
+| D-014 | Phone is stored only on User                                                         | Single source of truth                                     |
+| D-015 | All responses wrapped in `{ data }` (login: `{ data: { token, user } }`)             | Consistent client parsing                                  |
+| D-016 | Seed script is idempotent (upsert by email)                                          | Safe re-runs, no duplicate accounts                        |
