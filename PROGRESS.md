@@ -18,9 +18,9 @@
 
 ### C1 — Setup (`chore: scaffold client and server`)
 
-- [ ] Repo + folder structure (`/client`, `/server`)
-- [ ] Server: Express, Mongoose connection, error middleware, `.env.example`
-- [ ] Client: Vite + React, Router, axios instance
+- [x] Repo + folder structure (`/client`, `/server`)
+- [x] Server: Express, Mongoose connection, error middleware, `.env.example`
+- [x] Client: Vite + React, Router, axios instance
 - [x] Docs in repo root: AGENTS.md, SPEC.md, PROGRESS.md, DECISIONS.md
 
 ### C2 — Auth + models (`feat: auth, data models and client login`)
