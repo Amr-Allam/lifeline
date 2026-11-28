@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 **Deadline:** Nov 30, 2026 11:59 PM
-**Current focus:** Auth + models (C2)
-**Last updated:** Nov 27, 2026
+**Current focus:** Donors (C3)
+**Last updated:** Nov 28, 2026
 
 ## Plan
 
@@ -25,10 +25,11 @@
 
 ### C2 — Auth + models (`feat: auth, data models and client login`)
 
-- [ ] User, Donor, Request, Notification models
-- [ ] Register / login / me, JWT + role middleware
-- [ ] Seed script (admin)
-- [ ] Client Login/Register pages working against the API
+- [x] User, Donor, Request, Notification models
+- [x] City normalization util (moved here from C4)
+- [x] Register / login / me, JWT + role middleware
+- [x] Seed script (admin)
+- [x] Client Login/Register pages working against the API
 
 ### C3 — Donors (`feat: donor profile and search`)
 
@@ -37,7 +38,6 @@
 
 ### C4 — Requests + matching (`feat: emergency requests and matching`)
 
-- [ ] City normalization util
 - [ ] Matching service
 - [ ] POST `/requests`, GET `/requests/mine`, GET `/requests/:id`, PATCH status
 
@@ -67,11 +67,12 @@
 
 ## In progress
 
-Nothing yet (C2 not started).
+Nothing yet (C3 not started).
 
 ## Done
 
 - C1 — Setup: `/client` (Vite, React, Router, axios instance) and `/server` (Express, Mongoose connection, error middleware, `/api/health`, `.env.example`). Committed as `chore: scaffold client and server`.
+- C2 — Auth + models: User, Donor, Request, Notification models; city normalization util; register/login/me with JWT and role middleware; admin seed (`npm run seed`); client Login/Register pages. Tested manually with Postman against Atlas. Committed as `feat: auth, data models and client login`.
 
 ## Known issues
 

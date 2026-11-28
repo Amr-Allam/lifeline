@@ -26,7 +26,7 @@ Out of scope: compatibility matrix, geolocation/radius, real SMS, donation coold
 
 ## Data Models (Mongoose)
 
-**User**: `name`, `email` (unique, lowercase), `passwordHash`, `phone`, `role` (`donor|requester|admin`), `createdAt`
+**User**: `name`, `email` (unique, lowercase), `passwordHash` (never returned by the API), `phone` (required at registration, optional in the schema so the seeded admin needs none), `role` (`donor|requester|admin`), `createdAt`
 
 **Donor**: `user` (ref User, unique), `bloodGroup` (`A+|A-|B+|B-|AB+|AB-|O+|O-`), `city`, `cityNormalized`, `available` (bool, default true), `verified` (bool, default false), `verifiedAt`, `verifiedBy` (ref User), timestamps
 
@@ -60,9 +60,9 @@ All successful responses are wrapped in `{ data }`. Login returns `{ data: { tok
 
 | Method | Path                             | Access                                    | Purpose                                                                                                           |
 | ------ | -------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| POST   | /auth/register                   | public                                    | Register donor or requester (donor fields required if role=donor)                                                 |
+| POST   | /auth/register                   | public                                    | Register donor or requester (donor fields required if role=donor). Returns `201 { data: { token, user } }`        |
 | POST   | /auth/login                      | public                                    | Returns `{ data: { token, user } }`                                                                               |
-| GET    | /auth/me                         | auth                                      | Current user (+ donor profile if donor)                                                                           |
+| GET    | /auth/me                         | auth                                      | Returns `{ data: { user, donor } }`; `donor` is `null` for non-donors                                             |
 | GET    | /donors/me                       | donor                                     | Own donor profile                                                                                                 |
 | PATCH  | /donors/me                       | donor                                     | Update phone, city, availability                                                                                  |
 | GET    | /donors/search?bloodGroup=&city= | requester, admin                          | Verified + available donors; returns name, bloodGroup, city only                                                  |
@@ -74,6 +74,14 @@ All successful responses are wrapped in `{ data }`. Login returns `{ data: { tok
 | PATCH  | /admin/donors/:id/verify         | admin                                     | Body `{ verified: boolean }`                                                                                      |
 | GET    | /admin/requests?status=&urgency= | admin                                     | Request history with notification counts                                                                          |
 
+### Auth rules
+
+- Only `donor` and `requester` can self-register; any other role (including `admin`) returns 400.
+- Password: 8–72 characters (bcrypt ignores bytes past 72).
+- Status codes: 400 validation, 401 missing/invalid token or bad credentials, 403 wrong role, 409 duplicate email.
+- Login returns the same message for an unknown email and a wrong password.
+- JWT payload: `sub` (user id) and `role`. The server reloads the user on every authenticated request.
+
 ## Client Pages
 
 - `/login`, `/register` (role choice)
@@ -84,9 +92,12 @@ All successful responses are wrapped in `{ data }`. Login returns `{ data: { tok
 
 ## Environment Variables
 
-Server: `PORT`, `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `CLIENT_URL`, optional `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (if absent, auto-create an Ethereal test account).
+Server: `PORT`, `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `CLIENT_URL`, optional `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (if absent, auto-create an Ethereal test account). Seed only: `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
 Client: `VITE_API_URL`.
 
 ## Seed
 
-`npm run seed` (server). Idempotent (upsert by email), safe to run repeatedly. Creates one admin, sample donors as User + linked Donor documents, and a few sample requests.
+`npm run seed` (server). Idempotent (upsert by email), safe to run repeatedly.
+
+- C2: creates the admin from `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Re-running with the same email updates that admin (including the password). Changing `ADMIN_EMAIL` creates a new admin. If the email belongs to a non-admin user, the seed fails.
+- C8: also creates sample donors as User + linked Donor documents, and a few sample requests.
