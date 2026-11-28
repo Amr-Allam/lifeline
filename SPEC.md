@@ -58,21 +58,21 @@ On request creation: save request → find matches → send email + SMS stub per
 Base `/api`. Auth header: `Authorization: Bearer <token>`.
 All successful responses are wrapped in `{ data }`. Login returns `{ data: { token, user } }`. Errors return `{ error: "message" }`.
 
-| Method | Path                             | Access                                    | Purpose                                                                                                           |
-| ------ | -------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| POST   | /auth/register                   | public                                    | Register donor or requester (donor fields required if role=donor). Returns `201 { data: { token, user } }`        |
-| POST   | /auth/login                      | public                                    | Returns `{ data: { token, user } }`                                                                               |
-| GET    | /auth/me                         | auth                                      | Returns `{ data: { user, donor } }`; `donor` is `null` for non-donors                                             |
-| GET    | /donors/me                       | donor                                     | Own donor profile                                                                                                 |
-| PATCH  | /donors/me                       | donor                                     | Update phone, city, availability                                                                                  |
-| GET    | /donors/search?bloodGroup=&city= | requester, admin                          | Verified + available donors; returns name, bloodGroup, city only                                                  |
-| POST   | /requests                        | requester                                 | Create request, run matching, notify                                                                              |
-| GET    | /requests/mine                   | requester                                 | Own requests                                                                                                      |
-| GET    | /requests/:id                    | owner or admin only; anyone else gets 404 | Request + notification history (donor name, blood group, channel, status, previewUrl; never donor email or phone) |
-| PATCH  | /requests/:id/status             | owner, admin                              | Set `fulfilled` or `cancelled`                                                                                    |
-| GET    | /admin/donors?verified=          | admin                                     | List donors, filter by verification                                                                               |
-| PATCH  | /admin/donors/:id/verify         | admin                                     | Body `{ verified: boolean }`                                                                                      |
-| GET    | /admin/requests?status=&urgency= | admin                                     | Request history with notification counts                                                                          |
+| Method | Path                             | Access                                    | Purpose                                                                                                                                             |
+| ------ | -------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | /auth/register                   | public                                    | Register donor or requester (donor fields required if role=donor). Returns `201 { data: { token, user } }`                                          |
+| POST   | /auth/login                      | public                                    | Returns `{ data: { token, user } }`                                                                                                                 |
+| GET    | /auth/me                         | auth                                      | Returns `{ data: { user, donor } }`; `donor` is `null` for non-donors                                                                               |
+| GET    | /donors/me                       | donor                                     | Own profile. Returns `{ data: { user, donor } }` (same shape as `/auth/me`)                                                                         |
+| PATCH  | /donors/me                       | donor                                     | Update phone, city, availability (at least one required; other fields ignored). Returns `{ data: { user, donor } }`                                 |
+| GET    | /donors/search?bloodGroup=&city= | requester, admin                          | Verified + available donors; `bloodGroup` and `city` both required (400 otherwise); returns `[{ name, bloodGroup, city }]` sorted by name, no limit |
+| POST   | /requests                        | requester                                 | Create request, run matching, notify                                                                                                                |
+| GET    | /requests/mine                   | requester                                 | Own requests                                                                                                                                        |
+| GET    | /requests/:id                    | owner or admin only; anyone else gets 404 | Request + notification history (donor name, blood group, channel, status, previewUrl; never donor email or phone)                                   |
+| PATCH  | /requests/:id/status             | owner, admin                              | Set `fulfilled` or `cancelled`                                                                                                                      |
+| GET    | /admin/donors?verified=          | admin                                     | List donors, filter by verification                                                                                                                 |
+| PATCH  | /admin/donors/:id/verify         | admin                                     | Body `{ verified: boolean }`                                                                                                                        |
+| GET    | /admin/requests?status=&urgency= | admin                                     | Request history with notification counts                                                                                                            |
 
 ### Auth rules
 
@@ -81,6 +81,11 @@ All successful responses are wrapped in `{ data }`. Login returns `{ data: { tok
 - Status codes: 400 validation, 401 missing/invalid token or bad credentials, 403 wrong role, 409 duplicate email.
 - Login returns the same message for an unknown email and a wrong password.
 - JWT payload: `sub` (user id) and `role`. The server reloads the user on every authenticated request.
+
+### Donor rules
+
+- Changing `city` recomputes `cityNormalized` and does not reset `verified`.
+- In query strings, `+` must be sent as `%2B` (`bloodGroup=O%2B`).
 
 ## Client Pages
 

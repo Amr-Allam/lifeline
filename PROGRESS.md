@@ -1,7 +1,7 @@
 # PROGRESS.md
 
 **Deadline:** Nov 30, 2026 11:59 PM
-**Current focus:** Donors (C3)
+**Current focus:** Requests + matching (C4)
 **Last updated:** Nov 28, 2026
 
 ## Plan
@@ -33,8 +33,8 @@
 
 ### C3 — Donors (`feat: donor profile and search`)
 
-- [ ] GET/PATCH `/donors/me`
-- [ ] GET `/donors/search`
+- [x] GET/PATCH `/donors/me`
+- [x] GET `/donors/search`
 
 ### C4 — Requests + matching (`feat: emergency requests and matching`)
 
@@ -67,12 +67,13 @@
 
 ## In progress
 
-Nothing yet (C3 not started).
+Nothing.
 
 ## Done
 
 - C1 — Setup: `/client` (Vite, React, Router, axios instance) and `/server` (Express, Mongoose connection, error middleware, `/api/health`, `.env.example`). Committed as `chore: scaffold client and server`.
 - C2 — Auth + models: User, Donor, Request, Notification models; city normalization util; register/login/me with JWT and role middleware; admin seed (`npm run seed`); client Login/Register pages. Tested manually with Postman against Atlas. Committed as `feat: auth, data models and client login`.
+- C3 — Donors: GET/PATCH `/api/donors/me`, GET `/api/donors/search` (verified + available only; name, bloodGroup, city). Tested manually with Postman against Atlas. Committed as `feat: donor profile and search`.
 
 ## Known issues
 
